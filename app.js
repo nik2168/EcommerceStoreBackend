@@ -6,9 +6,10 @@ import cors from 'cors'
 import { corsOptions } from "./constants/config.js";
 import userRoutes from './Routes/user.routes.js'
 import productRoutes from './Routes/product.routes.js'
-// import orderRoutes from './Routes/order.routes.js'
+import orderRoutes from './Routes/order.routes.js'
 import categoryRoutes from './Routes/category.routes.js'
 import companyRoutes from './Routes/company.routes.js'
+import cartRoutes from './Routes/cart.routes.js'
 
 
 const app = express();
@@ -41,7 +42,8 @@ mongoose
 
   app.use("/api/v1/user", userRoutes);
   app.use("/api/v1/product", productRoutes);
-  // app.use("/api/v1/order", orderRoutes);
+  app.use("/api/v1/order", orderRoutes);
   app.use("/api/v1/company", companyRoutes);
   app.use("/api/v1/category", categoryRoutes);
+  app.use("/api/v1/cart", cartRoutes);
 

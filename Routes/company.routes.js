@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { addCompany, removeCompany } from "../Controllers/company.controller.js";
+import { nameBodyValidator, validateHandler } from "../lib/validators.js";
 
 const router = Router();
 
-router.post('/add', addCompany)
+router.post('/add', nameBodyValidator(), validateHandler, addCompany)
 router.delete('/remove', removeCompany)
 
 

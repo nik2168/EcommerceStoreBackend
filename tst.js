@@ -1,5 +1,13 @@
-const a = {
-    name: 'Nik'
+let a = [{name: "Nik", role: "admin"}]
+console.log(a)
+
+if (a.includes({ name: "Nik", role: "admin" })) {
+  a = a.map((i) => {
+    if (i.name === "Nik") {
+      i.role = "member";
+    }
+    return i;
+  });
 }
-a["class"] = '10th'
-console.log(a);
+
+console.log(a)

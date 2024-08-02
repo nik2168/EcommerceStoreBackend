@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -13,8 +13,13 @@ const orderSchema = new mongoose.Schema(
     },
 
     orderTotal: {
-      type: String,
+      type: Number,
       required: true,
+    },
+
+    user: {
+      type: Types.ObjectId,
+      ref: "User",
     },
 
     cartItems: [

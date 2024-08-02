@@ -80,7 +80,9 @@ export const getAllProducts = async (req, res) => {
 
   try {
     if (featured) {
-      const products = await Product.find({ featured: true });
+      const products = await Product.find({ featured: true })
+        .populate("company")
+        .populate("category");
       if (!products) {
         return res
           .status(400)
@@ -94,7 +96,9 @@ export const getAllProducts = async (req, res) => {
       });
     }
 
-    const products = await Product.find({});
+    const products = await Product.find({})
+      .populate("company")
+      .populate("category");
 
     if (!products) {
       return res
@@ -126,7 +130,9 @@ export const getSingleProduct = async (req, res) => {
       });
     }
 
-    const product = await Product.find({ _id: productId });
+    const product = await Product.find({ _id: productId })
+      .populate("company")
+      .populate("category");
 
     if (!product) {
       return res
@@ -162,17 +168,19 @@ export const filterProducts = async (req, res) => {
       const categoryData = await Category.findOne({
         name: category.toString(),
       });
-      filterObj['category'] = `${categoryData._id.toString()}`
+      filterObj["category"] = `${categoryData._id.toString()}`;
     }
 
     if (company.toString() !== "all") {
       const companyData = await Company.findOne({
         name: company.toString(),
       });
-      filterObj['company'] = `${companyData._id.toString()}`
+      filterObj["company"] = `${companyData._id.toString()}`;
     }
 
-    const products = await Product.find(filterObj);
+    const products = await Product.find(filterObj)
+      .populate("company")
+      .populate("category");
 
     if (!products) {
       return res
@@ -193,107 +201,35 @@ export const filterProducts = async (req, res) => {
   }
 };
 
-// export const filterProducts = async (req, res) => {
-//   const { search, category, company, price, shipping } = req.query;
+export const paginatedProducts = async (req, res) => {
+  const { page = 1 } = req.query;
 
-//   try {
-//     if (category.toString() !== "all" && company.toString() !== "all") {
-//       const companyData = await Company.findOne({ name: company.toString() });
+  try {
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-//       const categoryData = await Category.findOne({
-//         name: category.toString(),
-//       });
+    const [products, totalProductCount] = await Promise.all([
+      Product.find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("company")
+        .populate("category")
+        .lean(),
 
-//       const products = await Product.find({
-//         title: { $regex: search, $options: "i" },
-//         price: { $lt: price.toString() },
-//         shipping: shipping,
-//         category: categoryData._id.toString(),
-//         company: companyData._id.toString(),
-//       });
+      Product.countDocuments({}),
+    ]);
 
-//       if (!products) {
-//         return res
-//           .status(400)
-//           .json({ success: false, message: `products not found !` });
-//       }
+    const totalPages = Math.ceil(totalProductCount / limit) || 0; // math ceil will roundoff the value
 
-//       return res.status(200).json({
-//         success: true,
-//         message: `filtered products found successfully !`,
-//         products,
-//       });
-//     }
-//     if (category.toString() !== "all") {
-//       const categoryData = await Category.findOne({
-//         name: category.toString(),
-//       });
-
-//       const products = await Product.find({
-//         title: { $regex: search, $options: "i" },
-//         price: { $lt: price.toString() },
-//         shipping: shipping,
-//         category: categoryData._id.toString(),
-//       });
-
-//       if (!products) {
-//         return res
-//           .status(400)
-//           .json({ success: false, message: `products not found !` });
-//       }
-
-//       return res.status(200).json({
-//         success: true,
-//         message: `filtered products found successfully !`,
-//         products,
-//       });
-//     }
-
-//     if (company.toString() !== "all") {
-//       const companyData = await Company.findOne({ name: company.toString() });
-
-//       const products = await Product.find({
-//         title: { $regex: search, $options: "i" },
-//         price: { $lt: price.toString() },
-//         shipping: shipping,
-//         company: companyData._id.toString(),
-//       });
-
-//       if (!products) {
-//         return res
-//           .status(400)
-//           .json({ success: false, message: `products not found !` });
-//       }
-
-//       return res.status(200).json({
-//         success: true,
-//         message: `filtered products found successfully !`,
-//         products,
-//       });
-//     }
-
-//     const products = await Product.find({
-//       title: { $regex: search, $options: "i" },
-//       price: { $lt: price.toString() },
-//       shipping: shipping,
-//     });
-
-//     if (!products) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: `products not found !` });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: `filtered products found successfully !`,
-//       products,
-//     });
-
-//   } catch (err) {
-//     return res.status(400).json({
-//       success: false,
-//       message: `Error while filtering products !, ${err}`,
-//     });
-//   }
-// };
+    return res
+      .status(200)
+      .json({ success: true, products: products, totalPages });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: "error while pagination the products",
+      err,
+    });
+  }
+};
