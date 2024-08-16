@@ -16,7 +16,7 @@ export const userSignUp = async (req, res) => {
 
     return res
       .status(201)
-      .json({ success: true, user: { token, data: newUser }, message: "SignUp Successfully !" });
+      .json({ success: true, user: newUser, token, message: "SignUp Successfully !" });
   } catch (err) {
     return res
       .status(400)
@@ -25,10 +25,10 @@ export const userSignUp = async (req, res) => {
 };
 
 export const userLogin = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ username: username }).select("+password");
+    const user = await User.findOne({ email: email }).select("+password");
 
     const matchPassword = await bcrypt.compare(password, user.password);
 
@@ -40,7 +40,7 @@ export const userLogin = async (req, res) => {
 
     const token = jwt.sign({ _id: user._id }, process.env.SECRETKEY);
 
-    return res.status(200).json({ success: true, user: { token, data: user }, message: "login successfully !" });
+    return res.status(200).json({ success: true, user: user, token, message: "login successfully !" });
   } catch (err) {
     return res
       .status(400)

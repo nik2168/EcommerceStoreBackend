@@ -21,12 +21,12 @@ const verifySignUpBody = async (req, res, next) => {
 };
 
 const verifyLoginBody = async (req, res, next) => {
-  const { password, username } = req.body;
+  const { password, email } = req.body;
 
   try{
   if (!password) return res.status(400).json({success: false, message: "Please provide the password"});
-  if (!username) return res.status(400).json({success: false, message: "Please provide the username"});
-  const finduser = await User.findOne({ username: req.body.username });
+  if (!email) return res.status(400).json({success: false, message: "Please provide the email"});
+  const finduser = await User.findOne({ email: req.body.email });
   if (!finduser)
     return res
       .status(400)
