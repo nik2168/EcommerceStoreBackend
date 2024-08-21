@@ -155,7 +155,7 @@ export const getSingleProduct = async (req, res) => {
 };
 
 export const filterProducts = async (req, res) => {
-  const { search, category, company, price, shipping } = req.query;
+  const { search, category, company, order, price, shipping } = req.query;
 
   try {
     const filterObj = {
@@ -168,15 +168,23 @@ export const filterProducts = async (req, res) => {
       const categoryData = await Category.findOne({
         name: category.toString(),
       });
-      filterObj["category"] = `${categoryData._id.toString()}`;
+      filterObj["category"] = categoryData._id.toString();
+    }
+
+    if(order.toString() !== "none") {
+      if(order.toString() === 'a-z') filterObj["sort"] = {title: 1}
+      if(order.toString() === 'z-a') filterObj["sort"] = {title: -1}
+      if(order.toString() === 'low') filterObj["sort"] = {price: 1}
+      if(order.toString() === 'high') filterObj["sort"] = {price: -1}
     }
 
     if (company.toString() !== "all") {
       const companyData = await Company.findOne({
         name: company.toString(),
       });
-      filterObj["company"] = `${companyData._id.toString()}`;
+      filterObj["company"] = companyData._id.toString();
     }
+console.log(filterObj);
 
     const products = await Product.find(filterObj)
       .populate("company")
