@@ -1,7 +1,6 @@
-import Category from '../Models/category.model.js'
+import Category from "../Models/category.model.js";
 
 export const addCategory = async (req, res) => {
-
   const name = req.body.name;
 
   try {
@@ -32,6 +31,21 @@ export const addCategory = async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Error while adding new category" });
+  }
+};
+
+export const fetchAllCatagories = async (req, res) => {
+  try {
+    const categories = await Category.find({});
+    if (!categories)
+      return res.status(400).json({ message: "categories not found !" });
+    return res
+      .status(200)
+      .json({ message: "categories found successfully !", categories });
+  } catch (err) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Error while removing the company" });
   }
 };
 

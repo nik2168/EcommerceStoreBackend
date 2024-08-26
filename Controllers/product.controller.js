@@ -158,6 +158,8 @@ export const filterProducts = async (req, res) => {
   const { search, category, company, order, price, shipping } = req.query;
 
   try {
+
+
     const filterObj = {
       title: { $regex: search, $options: "i" },
       price: { $lt: price },
@@ -171,12 +173,6 @@ export const filterProducts = async (req, res) => {
       filterObj["category"] = categoryData._id.toString();
     }
 
-    if(order.toString() !== "none") {
-      if(order.toString() === 'a-z') filterObj["sort"] = {title: 1}
-      if(order.toString() === 'z-a') filterObj["sort"] = {title: -1}
-      if(order.toString() === 'low') filterObj["sort"] = {price: 1}
-      if(order.toString() === 'high') filterObj["sort"] = {price: -1}
-    }
 
     if (company.toString() !== "all") {
       const companyData = await Company.findOne({
@@ -184,11 +180,35 @@ export const filterProducts = async (req, res) => {
       });
       filterObj["company"] = companyData._id.toString();
     }
-console.log(filterObj);
+    
+    let products;
 
-    const products = await Product.find(filterObj)
-      .populate("company")
-      .populate("category");
+    if (order.toString() !== "none") {
+      if (order.toString() === "a-z") {
+        products = await Product.find(filterObj, null, { sort: { title: 1 } })
+          .populate("company")
+          .populate("category");
+      }
+      if (order.toString() === "z-a") {
+        products = await Product.find(filterObj, null, { sort: { title: -1 } })
+          .populate("company")
+          .populate("category");
+      }
+      if (order.toString() === "low") {
+        products = await Product.find(filterObj, null, { sort: { price: 1 } })
+          .populate("company")
+          .populate("category");
+      }
+      if (order.toString() === "high") {
+        products = await Product.find(filterObj, null, { sort: { price: -1 } })
+          .populate("company")
+          .populate("category");
+      }
+    } else{
+      products = await Product.find(filterObj)
+        .populate("company")
+        .populate("category");
+    }
 
     if (!products) {
       return res

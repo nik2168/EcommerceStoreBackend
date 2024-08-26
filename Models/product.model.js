@@ -8,8 +8,8 @@ const productSchema = new mongoose.Schema(
     },
 
     company: {
-      type: String,
-      required: true,
+      type: Types.ObjectId,
+      ref: "Company",
     },
 
     description: {
