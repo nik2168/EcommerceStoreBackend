@@ -121,6 +121,7 @@ export const getAllProducts = async (req, res) => {
 
 export const getSingleProduct = async (req, res) => {
   const productId = req.params.id;
+  console.log(productId, "id here .,...")
 
   try {
     if (!productId) {

@@ -7,7 +7,7 @@ const router = Router()
 
 router.use(isAuthenticated)
 
-router.get('/', getCartData)
+router.post('/', getCartData)
 router.post('/additem', addCartItemValidator(), validateHandler, addCartItem)
 router.put('/removeitem/:id', removeCartItem)
 router.put('/update',  cartUpdateValidator(), validateHandler, updateItemQuantity)
