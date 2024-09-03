@@ -121,7 +121,6 @@ export const getAllProducts = async (req, res) => {
 
 export const getSingleProduct = async (req, res) => {
   const productId = req.params.id;
-  console.log(productId, "id here .,...")
 
   try {
     if (!productId) {
@@ -144,7 +143,7 @@ export const getSingleProduct = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `all product found successfully !`,
-      product,
+      product: product[0],
     });
   } catch (err) {
     return res.status(400).json({
@@ -157,7 +156,6 @@ export const getSingleProduct = async (req, res) => {
 
 export const filterProducts = async (req, res) => {
   const { search, category, company, order, price, shipping } = req.query;
-
   try {
 
 

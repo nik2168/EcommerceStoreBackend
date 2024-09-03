@@ -6,8 +6,8 @@ const router = Router()
 router.post('/add', addProductValidator(), validateHandler, addProduct)
 router.delete('/delete/:id', deleteProduct)
 
-// router.get('/products', getAllProducts)
-router.get('/:id', getSingleProduct)
+router.get('/products', getAllProducts)
+router.get('/getsingleproduct/:id', getSingleProduct)
 router.get('/productsfilter', filterProductValidator(), validateHandler, filterProducts)
 router.get("/productspagination", paginatedProducts);
 
