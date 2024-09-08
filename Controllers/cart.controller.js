@@ -14,18 +14,18 @@ export const getCartData = async (req, res) => {
     );
 
     if (!cartData) {
-      const newCart = await Cart.create({
-        user: userId,
-        products: [],
-      });
+      // const newCart = await Cart.create({
+      //   user: userId,
+      //   products: [],
+      // });
       return res
         .status(200)
-        .json({ success: true, message: "New Cart Created !" });
+        .json({ success: true, message: "Cart is empty !", cartData: NULL });
     }
 
     return res.status(200).json({
       success: true,
-      message: "cartData found successfully !",
+      message: "cartData found successfully now !",
       cartData,
     });
   } catch (err) {
@@ -59,14 +59,16 @@ export const addCartItem = async (req, res) => {
     userCart.products = userCart.products.map((i) => {
       if (i.product.toString() === productId.toString()) {
         present = true;
+        i.quantity = quantity;
       }
       return i;
     });
 
     if (present) {
+        await userCart.save();
       return res
         .status(200)
-        .json({ success: true, message: "Item already added to cart !" });
+        .json({ success: true, message: "Item added to cart !", userCart });
     }
 
     const newProduct = { product: productId, quantity };
@@ -113,28 +115,28 @@ export const removeCartItem = async (req, res) => {
   }
 };
 
-export const updateItemQuantity = async (req, res) => {
-  const userId = req.userId;
-  const { productId, quantity } = req.body;
+// export const updateItemQuantity = async (req, res) => {
+//   const userId = req.userId;
+//   const { productId, quantity } = req.body;
 
-  try {
-    const userCart = await Cart.findOne({ user: userId });
+//   try {
+//     const userCart = await Cart.findOne({ user: userId });
 
-    userCart.products = userCart.products.map((i) => {
-      if (i.product.toString() === productId.toString()) {
-        i.quantity = quantity;
-      }
-      return i;
-    });
+//     userCart.products = userCart.products.map((i) => {
+//       if (i.product.toString() === productId.toString()) {
+//         i.quantity = quantity;
+//       }
+//       return i;
+//     });
 
-    await userCart.save();
+//     await userCart.save();
 
-    return res
-      .status(200)
-      .json({ success: true, message: "cart updated successfully", userCart });
-  } catch (err) {
-    return res
-      .status(400)
-      .json({ success: false, message: "error while updating cart", err });
-  }
-};
+//     return res
+//       .status(200)
+//       .json({ success: true, message: "cart updated successfully", userCart });
+//   } catch (err) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "error while updating cart", err });
+//   }
+// };
